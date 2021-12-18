@@ -14,7 +14,7 @@ def prime(number):
      
     
       
-prime(600851475143)
+prime(3843784)
 
 
 print(factors)

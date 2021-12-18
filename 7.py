@@ -38,7 +38,7 @@ def IsPrime( n ):
 	return 1
 
 N,T = 1,3
-while N < 10001:
+while N < 100000000:
 	if IsPrime(T):
 		N+=1
 	T+=2

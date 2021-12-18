@@ -22,20 +22,86 @@ grid = [
        ]
 
 
-# for row in grid:
-#     for digit in row:
-#         print(digit)
-
 currentMax = 0
-for i in range(0, 20):
-    currentDigits = []
-    for n in range(0, 20):
-        currentDigits.append(grid[i][n])
-    product = 1
-    print(currentDigits)
-    # for digit in digits:
-    #     product = product * (digit)
-    # if product > currentMax:
-    #     currentMax = product
+horizatalDigits = []
+verticalDigits = []
+
+diagonallydigits = []
+
+diagonallydigits2 = []
+
+# 51267216
+
+
+for row in range(0, 16):
+    for col in range(4, 16):
+        diagonallyTemp = []
+        for i in range (0, 4):
+            diagonallyTemp.append(grid[row+i][col-i])
+        diagonallydigits.append(diagonallyTemp)
+
+
+# print(diagonallydigits)
+
+
+maxMax = 0
+
+maxMax2 = 0
+
+overallMax = 0
+
+for numbers in diagonallydigits:
+    currentMax = 1
+    for digit in numbers:
+        currentMax = currentMax * digit
+    if currentMax > maxMax:
+        maxMax = currentMax
+
+print(maxMax)
+
+
+
+# for row in range(0, 17):
+#     for col in range(0, 20):
+#         verticalTemp = []
+#         horizatalDigits.append(grid[row][col:col+4])
+#         for i in range(0,4):
+#             verticalTemp.append(grid[row+i][col])
+#         verticalDigits.append(verticalTemp)
     
-# print(currentMax)
+
+# product = 1
+
+
+# horizatalDigits = filter(lambda x: (len(x) == 4), horizatalDigits)
+# horizatalDigits = list(horizatalDigits)
+
+# print(horizatalDigits)
+# print("\n", verticalDigits)
+    
+# maxMax = 0
+
+# maxMax2 = 0
+
+# overallMax = 0
+    
+# for numbers in verticalDigits:
+#     currentMax = 1
+#     for digit in numbers:
+#         currentMax = currentMax * digit
+#     if currentMax > maxMax:
+#         maxMax = currentMax
+        
+# for numbers in horizatalDigits:
+#     currentMax = 1
+#     for digit in numbers:
+#         currentMax = currentMax * digit
+#     if currentMax > maxMax2:
+#         maxMax2 = currentMax
+        
+# if maxMax2 > maxMax:
+#     overallMax = maxMax2
+# else:
+#     overallMax = maxMax
+           
+# print(overallMax)
