@@ -2,7 +2,7 @@ from itertools import count
 
 grid = []
 
-gridSize = 20
+gridSize = 999
 
 
 def createGrid(number):
@@ -32,10 +32,13 @@ def calculateNumberOfPaths(gridSize):
             if (current[0], current[1] - 1) not in queue:
                 queue.append((current[0], current[1] - 1))
             paths[current[0]][current[1] - 1] += paths[current[0]][current[1]]
+    for row in paths:
+        print(row)
     return paths[0][0]
 
 
 print(calculateNumberOfPaths(gridSize))
+
 
 # for row in grid:
 #     print(row)
