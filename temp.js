@@ -14,6 +14,7 @@ let btn_upload = document
 
 function next(results) {
   let results2 = Array(results)[0].data;
+  next2(results2)
 }
 
 function getNextGrid(bigGrid) {
@@ -41,6 +42,9 @@ function getNextGrid(bigGrid) {
   return gridNumbers;
 }
 
+
+
+
 function cloneVariable(variableData) {
   return JSON.parse(JSON.stringify(variableData));
 }
@@ -53,12 +57,23 @@ function checkIfAllowed(grid, row, col, number) {
   }
 
   let numbersInCol = returnCol(grid, col);
-  if (number in numbersInCol) {
+  // output()
+
+  // function output() {
+  //   if (output.fired === true) {
+  //     return
+  //   }
+  //   output.fired = true
+  //   console.log(returnCol(grid,col))
+  //   console.log(returnBox(grid, row, col))
+  // }
+
+  if (!(number in numbersInCol)) {
     return false;
   }
 
   let numbersInBox = returnBox(grid, row, col);
-  if (number in numbersInBox) {
+  if (!(number in numbersInBox)) {
     return false;
   }
 
@@ -66,6 +81,28 @@ function checkIfAllowed(grid, row, col, number) {
 }
 
 function solveGrid(grid, gridSize) {
+
+  for (let row = 0; row < gridSize; row++) {
+    for (let col = 0; col < gridSize; col++) {
+      if (grid[row][col] === 0) {
+        let possible = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        let numbersInRow = possible.filter((x) => grid[row].includes(x));
+        let numbersInCol = possible.filter((x) =>
+          returnCol(grid, col).includes(x)
+        );
+        let numbersInBox = possible.filter((x) =>
+          returnBox(grid, row, col).includes(x)
+        );
+        let allNumbers = numbersInRow.concat(numbersInCol).concat(numbersInBox);
+        possible = possible.filter((x) => !allNumbers.includes(x));
+        if (possible.length === 1) {
+        grid[row][col] = possible[0];
+        }
+      }
+    }
+  }
+
+
   let row = -1;
   let col = -1;
   let isSolved = true;
@@ -124,20 +161,46 @@ function returnBox(grid, row, col) {
   return numbers;
 }
 
-let grid = [
-  [0, 0, 3, 0, 2, 0, 6, 0, 0],
-  [9, 0, 0, 3, 0, 5, 0, 0, 1],
-  [0, 0, 1, 8, 0, 6, 4, 0, 0],
-  [0, 0, 8, 1, 0, 2, 9, 0, 0],
-  [7, 0, 0, 0, 0, 0, 0, 0, 8],
-  [0, 0, 6, 7, 0, 8, 2, 0, 0],
-  [0, 0, 2, 6, 0, 9, 5, 0, 0],
-  [8, 0, 0, 2, 0, 3, 0, 0, 9],
-  [0, 0, 5, 0, 1, 0, 3, 0, 0],
-];
 
-let size = 9;
 
-solveGrid(grid, size);
+function next2(wholeGrid) {
+  let size = 9;
+  let sum = 0;
 
-console.log(grid);
+  for (let numGrid = 0; numGrid < 50; numGrid++) {
+    console.log(numGrid)
+    let grid = getNextGrid(wholeGrid)
+    solveGrid(grid, size)
+    let bigNumber = (grid[0][0] * 100) + (grid[0][1] * 10) + grid[0][2]
+    sum = sum + bigNumber
+  }
+  console.log(sum)
+}
+
+
+
+
+
+
+
+function returnCol(grid, col) {
+  let numbers = [];
+  for (let row of grid) {
+    numbers.push(row[col]);
+  }
+  return numbers;
+}
+
+function returnBox(grid, row, col) {
+  let numbers = [];
+  let rowBox = Math.floor(row / 3) * 3;
+  let colBox = Math.floor(col / 3) * 3;
+
+  for (let row2 = rowBox; row2 < rowBox + 3; row2++) {
+    for (let col2 = colBox; col2 < colBox + 3; col2++) {
+      numbers.push(grid[row2][col2]);
+    }
+  }
+
+  return numbers;
+}
