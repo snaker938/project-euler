@@ -27,83 +27,161 @@ let graph = [
   ['-', '-', '-', '23', '11', '27', '-'],
 ];
 
-let numVertices = 6;
-
-let keys = [
-  0,
-  Infinity,
-  Infinity,
-  Infinity,
-  Infinity,
-  Infinity,
-  Infinity,
-  Infinity,
+let newGraph = [
+  ['-', '-', '-', '-', '-', '-', '-'],
+  ['-', '-', '-', '-', '-', '-', '-'],
+  ['-', '-', '-', '-', '-', '-', '-'],
+  ['-', '-', '-', '-', '-', '-', '-'],
+  ['-', '-', '-', '-', '-', '-', '-'],
+  ['-', '-', '-', '-', '-', '-', '-'],
+  ['-', '-', '-', '-', '-', '-', '-'],
 ];
 
-let verticies = ['A', 'B', 'C', 'D', 'E', 'F'];
-let currentMinimumTree = [];
+let currentTree = [];
+let verticies = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+let connections = [];
 
-let count = 0;
+// while (cur)
+for (let currentRow = 0; currentRow < 7; currentRow++) {
+  let newRow = cloneVariable(graph[currentRow]);
+  newRow = sliceRow(newRow);
 
-while (currentMinimumTree.length !== numVertices) {
-  let currentVertex = getCurrentVertex();
-  if (currentVertex !== undefined) {
-    currentMinimumTree.push(currentVertex);
+  // console.log(newRow);
+
+  let outputs = getSmallestNumberCol(
+    cloneVariable(currentRow),
+    cloneVariable(newRow)
+  );
+
+  let smallestNumberCol = outputs[0];
+  let randomRow = outputs[1];
+
+  if (smallestNumberCol === -1) {
+    continue;
   }
 
-  console.log('');
+  // console.log(smallestNumberCol, randomRow);
 
-  let indexOfCurrentVertex = verticies.indexOf(currentVertex);
+  // currentTree.push();
+  let connection1 = verticies[currentRow] + verticies[smallestNumberCol];
+  let connection2 = verticies[smallestNumberCol] + verticies[currentRow];
+  connections.push(connection1, connection2);
 
-  let adjacentVerticies = getAdjacentVerticies(indexOfCurrentVertex);
-  console.log(adjacentVerticies, currentVertex, currentMinimumTree);
+  // console.log(connection1, connection2, connections);
 
-  count += 1;
-  if (count == 6) {
-    break;
-  }
+  newGraph[currentRow][smallestNumberCol] =
+    graph[currentRow][smallestNumberCol];
+  // newGraph[currentRow][smallestNumberCol] = String(Math.min(...newRow));
 }
 
-function getAdjacentVerticies(currentIndex) {
-  let adjacentVerticices = [];
-  let row = graph[currentIndex];
-  for (let index = 0; index < numVertices; index++) {
-    if (row[index] !== '-') {
-      adjacentVerticices.push(verticies[index]);
+function getSmallestNumberCol(currentRow, newRow) {
+  let colNumber = newRow.indexOf(String(Math.min(...newRow)));
+  let connection1 = verticies[currentRow] + verticies[colNumber];
+
+  let count = 0;
+
+  let loop = graph[currentRow][colNumber] == '-';
+
+  // if (connections.indexOf(connection1) !== -1) {
+  //   console.log(newRow, 'edl', String(Math.min(...newRow)));
+  // }
+
+  while (
+    (!(connections.indexOf(connection1) == -1) &&
+      !(graph[currentRow][colNumber] == '-')) ||
+    loop
+  ) {
+    loop = false;
+    newRow.splice(colNumber, 1);
+    colNumber = newRow.indexOf(String(Math.min(...newRow)));
+    connection1 = verticies[currentRow] + verticies[colNumber];
+    // console.log(connections, connection1);
+    // console.log(
+    //   verticies[currentRow],
+    //   verticies[colNumber],
+    //   currentRow,
+    //   colNumber,
+    //   newRow,
+    //   ...newRow
+
+    count = count + 1;
+    if (count > 50) {
+      console.log('ending');
+      return [-1, newRow];
     }
   }
-  return adjacentVerticices;
+  // console.log(connection1, connections, connections.indexOf(connection1));
+  // console.log(colNumber, connections.indexOf(connection1), connection1);
+  // console.log(
+  //   newRow,
+  //   connection1,
+  //   graph[currentRow][colNumber],
+  //   graph[currentRow][colNumber] == '-'
+  // );
+  console.log(colNumber, connection1, graph[currentRow][colNumber] == '-');
+  return [colNumber, newRow];
 }
 
-function getAdjacentVerticiesWeights(currentIndex) {
-  let adjacentVerticices = [];
-  let row = graph[currentIndex];
-  for (vertex in row) {
-    if (vertex !== '-') {
-      adjacentVerticices.push(vertex);
-    }
-  }
+console.log(newGraph, getValue(newGraph));
+
+function sliceRow(row) {
+  let newRow = row.filter(function (value) {
+    return value !== '-';
+  });
+  return newRow;
 }
 
-function getCurrentVertex() {
-  let currentMin = Infinity;
-  let vertex;
-  for (let i = 0; i < numVertices; i++) {
-    if (
-      keys[i] < currentMin &&
-      currentMinimumTree.indexOf(verticies[i]) == -1
-    ) {
-      currentMin = keys[i];
-      vertex = verticies[i];
+function getValue(graph) {
+  let sum = 0;
+  for (let row of graph) {
+    for (let value of row) {
+      if (value !== '-') {
+        sum = sum + Number(value);
+      }
     }
   }
-  return vertex;
-  //   let keysInMinimumOrder = Math.min(...keys);
-  //   for (let key of keysInMinimumOrder) {
-  //     if (currentMinimumTree.indexOf(key) == null) {
-  //       continue;
-  //     } else {
-  //       return currentMinimumTree.indexOf(key);
-  //     }
-  //   }
+  return sum;
+}
+
+// let numVertices = 7;
+// let keys = [0, 9999, 9999, 9999, 9999, 9999, 9999];
+
+// let verticies = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+
+// let currentMinimumTree = [];
+
+// function getCurrentVertex() {
+//   let currentMin = Infinity;
+//   let vertex;
+//   for (let i = 0; i < numVertices; i++) {
+//     // console.log(keys[i], currentMin, vertex, currentMinimumTree);
+//     if (
+//       keys[i] < currentMin &&
+//       currentMinimumTree.indexOf(verticies[i]) == -1
+//     ) {
+//       currentMin = keys[i];
+//       vertex = verticies[i];
+//     }
+//   }
+//   return vertex;
+// }
+
+// function getAdjacentVerticiesWeightsInfo(currentIndex) {
+//   let adjacentVerticicesWeights = [];
+//   let indexOfWeights = [];
+//   // console.log(currentIndex);
+//   let row = graph[currentIndex];
+//   let count = 0;
+//   for (vertex of row) {
+//     if (vertex !== '-') {
+//       adjacentVerticicesWeights.push(vertex);
+//       indexOfWeights.push(count);
+//     }
+//     count += 1;
+//   }
+//   return [adjacentVerticicesWeights, indexOfWeights];
+// }
+
+function cloneVariable(variableData) {
+  return JSON.parse(JSON.stringify(variableData));
 }
