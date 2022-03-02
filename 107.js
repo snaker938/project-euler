@@ -18,43 +18,40 @@ function next(results) {
 }
 
 let graph = [
-  ['-', '16', '12', '21', '-', '-', '-'],
-  ['16', '-', '-', '17', '20', '-', '-'],
-  ['12', '-', '-', '28', '-', '31', '-'],
-  ['21', '17', '28', '-', '18', '19', '23'],
-  ['-', '20', '-', '18', '-', '-', '11'],
-  ['-', '-', '31', '19', '-', '-', '27'],
-  ['-', '-', '-', '23', '11', '27', '-'],
+  [Infinity, '16', '12', '21', Infinity, Infinity, Infinity],
+  ['16', Infinity, Infinity, '17', '20', Infinity, Infinity],
+  ['12', Infinity, Infinity, '28', Infinity, '31', Infinity],
+  ['21', '17', '28', Infinity, '18', '19', '23'],
+  [Infinity, '20', Infinity, '18', Infinity, Infinity, '11'],
+  [Infinity, Infinity, '31', '19', Infinity, Infinity, '27'],
+  [Infinity, Infinity, Infinity, '23', '11', '27', Infinity],
 ];
 
 let newGraph = [
-  ['-', '-', '-', '-', '-', '-', '-'],
-  ['-', '-', '-', '-', '-', '-', '-'],
-  ['-', '-', '-', '-', '-', '-', '-'],
-  ['-', '-', '-', '-', '-', '-', '-'],
-  ['-', '-', '-', '-', '-', '-', '-'],
-  ['-', '-', '-', '-', '-', '-', '-'],
-  ['-', '-', '-', '-', '-', '-', '-'],
+  [Infinity, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity],
+  [Infinity, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity],
+  [Infinity, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity],
+  [Infinity, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity],
+  [Infinity, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity],
+  [Infinity, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity],
+  [Infinity, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity],
 ];
 
 let currentTree = [];
 let verticies = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 let connections = [];
+let colNumbers = [];
 
 // while (cur)
 for (let currentRow = 0; currentRow < 7; currentRow++) {
   let newRow = cloneVariable(graph[currentRow]);
+  newRow = convertNulls(newRow);
+  // console.log(newRow);
   newRow = sliceRow(newRow);
 
   // console.log(newRow);
 
-  let outputs = getSmallestNumberCol(
-    cloneVariable(currentRow),
-    cloneVariable(newRow)
-  );
-
-  let smallestNumberCol = outputs[0];
-  let randomRow = outputs[1];
+  let smallestNumberCol = getSmallestNumberCol(currentRow, newRow);
 
   if (smallestNumberCol === -1) {
     continue;
@@ -63,124 +60,74 @@ for (let currentRow = 0; currentRow < 7; currentRow++) {
   // console.log(smallestNumberCol, randomRow);
 
   // currentTree.push();
-  let connection1 = verticies[currentRow] + verticies[smallestNumberCol];
-  let connection2 = verticies[smallestNumberCol] + verticies[currentRow];
-  connections.push(connection1, connection2);
+  // let connection1 = verticies[currentRow] + verticies[smallestNumberCol];
+  // let connection2 = verticies[smallestNumberCol] + verticies[currentRow];
+  // connections.push(connection1, connection2);
 
+  colNumbers.push(smallestNumberCol);
   // console.log(connection1, connection2, connections);
 
   newGraph[currentRow][smallestNumberCol] =
     graph[currentRow][smallestNumberCol];
+
+  console.log(
+    graph[currentRow][smallestNumberCol],
+    currentRow,
+    smallestNumberCol
+  );
   // newGraph[currentRow][smallestNumberCol] = String(Math.min(...newRow));
+}
+
+function convertNulls(row) {
+  let count = 0;
+  for (value of row) {
+    if (value == null) {
+      row[count] = Infinity;
+    }
+    count++;
+  }
+  return row;
 }
 
 function getSmallestNumberCol(currentRow, newRow) {
   let colNumber = newRow.indexOf(String(Math.min(...newRow)));
-  let connection1 = verticies[currentRow] + verticies[colNumber];
+
+  // console.log(colNumber, newRow);
+  // console.log(newRow);
+  // let connection1 = verticies[currentRow] + verticies[colNumber];
+
+  // console.log(connection1, colNumber, newRow);
 
   let count = 0;
 
-  let loop = graph[currentRow][colNumber] == '-';
-
-  // if (connections.indexOf(connection1) !== -1) {
-  //   console.log(newRow, 'edl', String(Math.min(...newRow)));
-  // }
-
-  while (
-    (!(connections.indexOf(connection1) == -1) &&
-      !(graph[currentRow][colNumber] == '-')) ||
-    loop
-  ) {
-    loop = false;
-    newRow.splice(colNumber, 1);
-    colNumber = newRow.indexOf(String(Math.min(...newRow)));
-    connection1 = verticies[currentRow] + verticies[colNumber];
-    // console.log(connections, connection1);
-    // console.log(
-    //   verticies[currentRow],
-    //   verticies[colNumber],
-    //   currentRow,
-    //   colNumber,
-    //   newRow,
-    //   ...newRow
-
-    count = count + 1;
-    if (count > 50) {
-      console.log('ending');
-      return [-1, newRow];
-    }
-  }
-  // console.log(connection1, connections, connections.indexOf(connection1));
-  // console.log(colNumber, connections.indexOf(connection1), connection1);
-  // console.log(
-  //   newRow,
-  //   connection1,
-  //   graph[currentRow][colNumber],
-  //   graph[currentRow][colNumber] == '-'
-  // );
-  console.log(colNumber, connection1, graph[currentRow][colNumber] == '-');
-  return [colNumber, newRow];
+  return colNumber;
 }
 
 console.log(newGraph, getValue(newGraph));
 
 function sliceRow(row) {
-  let newRow = row.filter(function (value) {
-    return value !== '-';
-  });
-  return newRow;
+  let col = 0;
+  for (value of row) {
+    if (col in colNumbers) {
+      // row[col] = Infinity;
+    }
+    col++;
+  }
+
+  return row;
 }
 
 function getValue(graph) {
   let sum = 0;
   for (let row of graph) {
     for (let value of row) {
-      if (value !== '-') {
+      if (value !== Infinity) {
         sum = sum + Number(value);
       }
     }
   }
   return sum;
 }
-
-// let numVertices = 7;
-// let keys = [0, 9999, 9999, 9999, 9999, 9999, 9999];
-
-// let verticies = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-
-// let currentMinimumTree = [];
-
-// function getCurrentVertex() {
-//   let currentMin = Infinity;
-//   let vertex;
-//   for (let i = 0; i < numVertices; i++) {
-//     // console.log(keys[i], currentMin, vertex, currentMinimumTree);
-//     if (
-//       keys[i] < currentMin &&
-//       currentMinimumTree.indexOf(verticies[i]) == -1
-//     ) {
-//       currentMin = keys[i];
-//       vertex = verticies[i];
-//     }
-//   }
-//   return vertex;
-// }
-
-// function getAdjacentVerticiesWeightsInfo(currentIndex) {
-//   let adjacentVerticicesWeights = [];
-//   let indexOfWeights = [];
-//   // console.log(currentIndex);
-//   let row = graph[currentIndex];
-//   let count = 0;
-//   for (vertex of row) {
-//     if (vertex !== '-') {
-//       adjacentVerticicesWeights.push(vertex);
-//       indexOfWeights.push(count);
-//     }
-//     count += 1;
-//   }
-//   return [adjacentVerticicesWeights, indexOfWeights];
-// }
 
 function cloneVariable(variableData) {
   return JSON.parse(JSON.stringify(variableData));
